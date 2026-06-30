@@ -1,0 +1,1894 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VOLTA — Італійський ресторан</title>
+  <meta name="description" content="VOLTA — вишукана італійська кухня у серці міста. Бронювання столику через Telegram." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ───────────── RESET & BASE ───────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0f0f0f;
+      --bg2:       #141414;
+      --bg3:       #1a1a1a;
+      --gold:      #c9a84c;
+      --gold-dim:  #a8843a;
+      --gold-glow: rgba(201,168,76,.18);
+      --cream:     #f5f0e8;
+      --cream-dim: #b8b0a2;
+      --border:    rgba(201,168,76,.18);
+      --ff-head:   'Playfair Display', Georgia, serif;
+      --ff-body:   'Inter', system-ui, sans-serif;
+      --radius:    4px;
+      --transition: 220ms ease;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--cream);
+      font-family: var(--ff-body);
+      font-size: 16px;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    img { display: block; max-width: 100%; }
+    a   { color: inherit; text-decoration: none; }
+
+    /* ───────────── SCROLLBAR ───────────── */
+    ::-webkit-scrollbar            { width: 6px; }
+    ::-webkit-scrollbar-track      { background: var(--bg); }
+    ::-webkit-scrollbar-thumb      { background: var(--gold-dim); border-radius: 3px; }
+
+    /* ───────────── UTILITIES ───────────── */
+    .container {
+      width: 100%;
+      max-width: 1140px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    .section-label {
+      display: inline-block;
+      font-family: var(--ff-body);
+      font-size: .72rem;
+      font-weight: 600;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 14px;
+    }
+
+    .section-title {
+      font-family: var(--ff-head);
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 600;
+      line-height: 1.18;
+      color: var(--cream);
+    }
+
+    .section-title em {
+      font-style: italic;
+      color: var(--gold);
+    }
+
+    .divider {
+      width: 48px;
+      height: 1px;
+      background: linear-gradient(90deg, var(--gold), transparent);
+      margin: 20px 0 36px;
+    }
+
+    /* ───────────── NAVBAR ───────────── */
+    .navbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 18px 0;
+      background: linear-gradient(180deg, rgba(15,15,15,.97) 0%, rgba(15,15,15,0) 100%);
+      transition: background var(--transition), backdrop-filter var(--transition);
+    }
+
+    .navbar.scrolled {
+      background: rgba(15,15,15,.96);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .navbar__inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .navbar__logo {
+      font-family: var(--ff-head);
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: .08em;
+      color: var(--gold);
+      cursor: pointer;
+    }
+
+    .navbar__logo span {
+      color: var(--cream);
+      font-style: italic;
+      font-weight: 400;
+      font-size: .95rem;
+      letter-spacing: .18em;
+      display: block;
+      margin-top: -4px;
+    }
+
+    .navbar__links {
+      display: flex;
+      list-style: none;
+      gap: 36px;
+    }
+
+    .navbar__links a {
+      font-size: .82rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--cream-dim);
+      transition: color var(--transition);
+    }
+
+    .navbar__links a:hover { color: var(--gold); }
+
+    .navbar__cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 22px;
+      border: 1px solid var(--gold);
+      border-radius: var(--radius);
+      font-size: .8rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--gold);
+      cursor: pointer;
+      transition: background var(--transition), color var(--transition);
+    }
+
+    .navbar__cta:hover {
+      background: var(--gold);
+      color: var(--bg);
+    }
+
+    /* hamburger */
+    .navbar__burger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      padding: 4px;
+      background: none;
+      border: none;
+    }
+
+    .navbar__burger span {
+      display: block;
+      width: 24px;
+      height: 2px;
+      background: var(--cream);
+      border-radius: 2px;
+      transition: transform var(--transition), opacity var(--transition);
+    }
+
+    /* mobile menu */
+    .navbar__mobile {
+      display: none;
+      flex-direction: column;
+      position: fixed;
+      inset: 0;
+      background: rgba(10,10,10,.98);
+      z-index: 99;
+      align-items: center;
+      justify-content: center;
+      gap: 32px;
+    }
+
+    .navbar__mobile a {
+      font-family: var(--ff-head);
+      font-size: 2rem;
+      color: var(--cream);
+      letter-spacing: .05em;
+      transition: color var(--transition);
+    }
+
+    .navbar__mobile a:hover { color: var(--gold); }
+
+    .navbar__mobile-close {
+      position: absolute;
+      top: 22px; right: 24px;
+      background: none; border: none;
+      color: var(--cream-dim);
+      font-size: 1.8rem;
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    /* ───────────── HERO ───────────── */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .hero__bg {
+      position: absolute;
+      inset: 0;
+      background-image: url('https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=1600&q=80&auto=format&fit=crop');
+      background-size: cover;
+      background-position: center;
+      filter: brightness(.38) saturate(.85);
+      transform: scale(1.04);
+    }
+
+    .hero__overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        135deg,
+        rgba(15,15,15,.82) 0%,
+        rgba(15,15,15,.38) 55%,
+        rgba(201,168,76,.06) 100%
+      );
+    }
+
+    .hero__content {
+      position: relative;
+      z-index: 2;
+      max-width: 680px;
+    }
+
+    .hero__badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 16px;
+      border: 1px solid rgba(201,168,76,.35);
+      border-radius: 2px;
+      font-size: .72rem;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 28px;
+    }
+
+    .hero__badge::before {
+      content: '';
+      display: inline-block;
+      width: 20px;
+      height: 1px;
+      background: var(--gold);
+    }
+
+    .hero__title {
+      font-family: var(--ff-head);
+      font-size: clamp(3.4rem, 9vw, 6.4rem);
+      font-weight: 700;
+      line-height: .94;
+      letter-spacing: -.01em;
+      color: var(--cream);
+      margin-bottom: 10px;
+    }
+
+    .hero__title em {
+      display: block;
+      font-style: italic;
+      font-weight: 400;
+      color: var(--gold);
+    }
+
+    .hero__sub {
+      font-family: var(--ff-head);
+      font-size: clamp(1rem, 2.5vw, 1.25rem);
+      font-style: italic;
+      color: var(--cream-dim);
+      margin-bottom: 36px;
+      max-width: 440px;
+      line-height: 1.5;
+    }
+
+    .hero__actions {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 15px 34px;
+      background: var(--gold);
+      color: #0f0f0f;
+      font-size: .82rem;
+      font-weight: 600;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: background var(--transition), transform 180ms ease, box-shadow var(--transition);
+    }
+
+    .btn-primary:hover {
+      background: #dbb95a;
+      box-shadow: 0 8px 32px rgba(201,168,76,.35);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 15px 28px;
+      border: 1px solid rgba(245,240,232,.3);
+      color: var(--cream);
+      font-size: .82rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: border-color var(--transition), color var(--transition);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+    }
+
+    /* hero scroll indicator */
+    .hero__scroll {
+      position: absolute;
+      bottom: 36px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      color: var(--cream-dim);
+      font-size: .68rem;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      z-index: 2;
+    }
+
+    .hero__scroll-line {
+      width: 1px;
+      height: 44px;
+      background: linear-gradient(180deg, var(--gold) 0%, transparent 100%);
+      animation: scrollPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes scrollPulse {
+      0%, 100% { opacity: .4; }
+      50%       { opacity: 1; }
+    }
+
+    /* ───────────── MARQUEE ───────────── */
+    .marquee-wrap {
+      background: var(--gold);
+      padding: 14px 0;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+
+    .marquee-track {
+      display: inline-flex;
+      gap: 0;
+      animation: marquee 28s linear infinite;
+    }
+
+    .marquee-track span {
+      display: inline-block;
+      padding: 0 28px;
+      font-size: .72rem;
+      font-weight: 600;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: #0f0f0f;
+    }
+
+    .marquee-track .dot {
+      color: rgba(15,15,15,.4);
+      padding: 0;
+    }
+
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .marquee-track { animation: none; }
+      .hero__scroll-line { animation: none; }
+    }
+
+    /* ───────────── ABOUT ───────────── */
+    .about {
+      padding: 110px 0;
+      background: var(--bg);
+    }
+
+    .about__grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+    }
+
+    .about__images {
+      position: relative;
+      height: 540px;
+    }
+
+    .about__img-main {
+      position: absolute;
+      top: 0; left: 0;
+      width: 72%;
+      height: 76%;
+      object-fit: cover;
+      border-radius: 2px;
+      box-shadow: 0 24px 64px rgba(0,0,0,.6);
+    }
+
+    .about__img-accent {
+      position: absolute;
+      bottom: 0; right: 0;
+      width: 56%;
+      height: 54%;
+      object-fit: cover;
+      border-radius: 2px;
+      box-shadow: 0 16px 48px rgba(0,0,0,.55);
+      border: 3px solid var(--bg);
+    }
+
+    .about__badge {
+      position: absolute;
+      bottom: 46%;
+      right: 36%;
+      transform: translate(50%, 50%);
+      width: 90px;
+      height: 90px;
+      background: var(--gold);
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 3;
+      box-shadow: 0 8px 28px rgba(201,168,76,.4);
+    }
+
+    .about__badge strong {
+      font-family: var(--ff-head);
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #0f0f0f;
+      line-height: 1;
+    }
+
+    .about__badge span {
+      font-size: .56rem;
+      font-weight: 600;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: rgba(15,15,15,.7);
+    }
+
+    .about__text p {
+      color: var(--cream-dim);
+      font-size: .97rem;
+      line-height: 1.85;
+      margin-bottom: 18px;
+    }
+
+    .about__stats {
+      display: flex;
+      gap: 36px;
+      margin-top: 40px;
+      padding-top: 36px;
+      border-top: 1px solid var(--border);
+    }
+
+    .about__stat strong {
+      display: block;
+      font-family: var(--ff-head);
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--gold);
+      line-height: 1;
+    }
+
+    .about__stat span {
+      font-size: .78rem;
+      color: var(--cream-dim);
+      letter-spacing: .06em;
+    }
+
+    /* ───────────── MENU ───────────── */
+    .menu {
+      padding: 110px 0;
+      background: var(--bg2);
+    }
+
+    .menu__header {
+      text-align: center;
+      margin-bottom: 64px;
+    }
+
+    .menu__header .divider {
+      margin: 20px auto 0;
+    }
+
+    .menu__tabs {
+      display: flex;
+      justify-content: center;
+      gap: 0;
+      margin-bottom: 56px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      width: fit-content;
+      margin-left: auto;
+      margin-right: auto;
+      overflow: hidden;
+    }
+
+    .menu__tab {
+      padding: 12px 28px;
+      font-size: .78rem;
+      font-weight: 500;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--cream-dim);
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      transition: background var(--transition), color var(--transition);
+      position: relative;
+    }
+
+    .menu__tab:not(:last-child) {
+      border-right: 1px solid var(--border);
+    }
+
+    .menu__tab.active,
+    .menu__tab:hover {
+      background: var(--gold);
+      color: #0f0f0f;
+    }
+
+    /* tab content */
+    .menu__panel { display: none; }
+    .menu__panel.active { display: block; }
+
+    .menu__grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .menu-card {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
+    }
+
+    .menu-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 48px rgba(0,0,0,.5), 0 0 0 1px rgba(201,168,76,.28);
+      border-color: rgba(201,168,76,.42);
+    }
+
+    .menu-card__img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      transition: transform 500ms ease;
+    }
+
+    .menu-card:hover .menu-card__img {
+      transform: scale(1.05);
+    }
+
+    .menu-card__img-wrap {
+      overflow: hidden;
+      position: relative;
+    }
+
+    .menu-card__tag {
+      position: absolute;
+      top: 12px; right: 12px;
+      padding: 4px 10px;
+      background: var(--gold);
+      color: #0f0f0f;
+      font-size: .64rem;
+      font-weight: 700;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      border-radius: 2px;
+    }
+
+    .menu-card__body {
+      padding: 20px 22px 22px;
+    }
+
+    .menu-card__name {
+      font-family: var(--ff-head);
+      font-size: 1.08rem;
+      font-weight: 600;
+      color: var(--cream);
+      margin-bottom: 7px;
+      line-height: 1.25;
+    }
+
+    .menu-card__desc {
+      font-size: .82rem;
+      color: var(--cream-dim);
+      line-height: 1.65;
+      margin-bottom: 16px;
+    }
+
+    .menu-card__footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .menu-card__price {
+      font-family: var(--ff-head);
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: var(--gold);
+    }
+
+    .menu-card__price span {
+      font-size: .72rem;
+      font-weight: 400;
+      font-family: var(--ff-body);
+      color: var(--cream-dim);
+    }
+
+    .menu-card__gram {
+      font-size: .74rem;
+      color: var(--cream-dim);
+      letter-spacing: .04em;
+    }
+
+    /* ───────────── ATMOSPHERE ───────────── */
+    .atmosphere {
+      padding: 110px 0;
+      background: var(--bg);
+    }
+
+    .atmosphere__header {
+      text-align: center;
+      margin-bottom: 56px;
+    }
+
+    .atmosphere__header .divider {
+      margin: 20px auto;
+    }
+
+    .atmosphere__gallery {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      grid-template-rows: 260px 260px;
+      gap: 12px;
+    }
+
+    .atmosphere__item {
+      overflow: hidden;
+      border-radius: 4px;
+      position: relative;
+    }
+
+    .atmosphere__item:first-child {
+      grid-row: 1 / 3;
+    }
+
+    .atmosphere__item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 600ms ease;
+    }
+
+    .atmosphere__item:hover img {
+      transform: scale(1.06);
+    }
+
+    .atmosphere__item::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, transparent 60%, rgba(15,15,15,.55) 100%);
+      pointer-events: none;
+    }
+
+    /* ───────────── RESERVATION CTA BAND ───────────── */
+    .cta-band {
+      padding: 90px 0;
+      background: linear-gradient(
+        135deg,
+        #111009 0%,
+        #1a1508 50%,
+        #110f09 100%
+      );
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-band::before {
+      content: 'VOLTA';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: var(--ff-head);
+      font-size: clamp(8rem, 22vw, 18rem);
+      font-weight: 800;
+      color: rgba(201,168,76,.04);
+      letter-spacing: .06em;
+      white-space: nowrap;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .cta-band__inner {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+    }
+
+    .cta-band__title {
+      font-family: var(--ff-head);
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 600;
+      color: var(--cream);
+      margin-bottom: 16px;
+      line-height: 1.2;
+    }
+
+    .cta-band__title em {
+      color: var(--gold);
+      font-style: italic;
+    }
+
+    .cta-band__sub {
+      font-size: .97rem;
+      color: var(--cream-dim);
+      margin-bottom: 44px;
+      max-width: 520px;
+      margin-left: auto;
+      margin-right: auto;
+      line-height: 1.75;
+    }
+
+    .cta-band__actions {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-tg {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 16px 36px;
+      background: var(--gold);
+      color: #0f0f0f;
+      font-size: .84rem;
+      font-weight: 700;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: background var(--transition), box-shadow var(--transition), transform 180ms ease;
+    }
+
+    .btn-tg:hover {
+      background: #dbb95a;
+      box-shadow: 0 10px 36px rgba(201,168,76,.4);
+      transform: translateY(-2px);
+    }
+
+    .btn-tg svg { flex-shrink: 0; }
+
+    /* ───────────── TESTIMONIALS ───────────── */
+    .testimonials {
+      padding: 100px 0;
+      background: var(--bg2);
+    }
+
+    .testimonials__header {
+      text-align: center;
+      margin-bottom: 60px;
+    }
+
+    .testimonials__header .divider {
+      margin: 20px auto;
+    }
+
+    .testimonials__grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .tcard {
+      padding: 32px 28px;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      position: relative;
+    }
+
+    .tcard__quote {
+      position: absolute;
+      top: 20px; right: 22px;
+      font-family: var(--ff-head);
+      font-size: 5rem;
+      line-height: 1;
+      color: rgba(201,168,76,.12);
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .tcard__stars {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 18px;
+    }
+
+    .tcard__star {
+      width: 14px;
+      height: 14px;
+      fill: var(--gold);
+    }
+
+    .tcard__text {
+      font-size: .9rem;
+      color: var(--cream-dim);
+      line-height: 1.8;
+      margin-bottom: 24px;
+      font-style: italic;
+    }
+
+    .tcard__author {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+    }
+
+    .tcard__avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--border);
+    }
+
+    .tcard__name {
+      font-weight: 600;
+      font-size: .88rem;
+      color: var(--cream);
+    }
+
+    .tcard__role {
+      font-size: .74rem;
+      color: var(--cream-dim);
+    }
+
+    /* ───────────── CONTACT ───────────── */
+    .contact {
+      padding: 110px 0;
+      background: var(--bg);
+    }
+
+    .contact__grid {
+      display: grid;
+      grid-template-columns: 1fr 1.1fr;
+      gap: 72px;
+      align-items: start;
+    }
+
+    .contact__info p {
+      color: var(--cream-dim);
+      font-size: .95rem;
+      line-height: 1.8;
+      margin-bottom: 36px;
+    }
+
+    .contact__list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    .contact__list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+    }
+
+    .contact__icon {
+      flex-shrink: 0;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .contact__icon svg {
+      width: 18px;
+      height: 18px;
+      stroke: var(--gold);
+      fill: none;
+      stroke-width: 1.6;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .contact__detail strong {
+      display: block;
+      font-size: .8rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 3px;
+    }
+
+    .contact__detail span {
+      font-size: .92rem;
+      color: var(--cream-dim);
+    }
+
+    /* map placeholder */
+    .contact__map {
+      border-radius: 6px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      aspect-ratio: 4/3;
+      position: relative;
+      background: var(--bg3);
+    }
+
+    .contact__map img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: .7;
+    }
+
+    .contact__map-pin {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .contact__map-pin svg {
+      width: 38px;
+      height: 38px;
+      stroke: var(--gold);
+      fill: rgba(201,168,76,.12);
+      stroke-width: 1.5;
+    }
+
+    .contact__map-pin span {
+      font-family: var(--ff-head);
+      font-size: 1.15rem;
+      font-style: italic;
+      color: var(--cream);
+      text-shadow: 0 2px 8px rgba(0,0,0,.8);
+    }
+
+    /* ───────────── FOOTER ───────────── */
+    footer {
+      background: #080808;
+      border-top: 1px solid var(--border);
+      padding: 52px 0 32px;
+    }
+
+    .footer__grid {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr 1fr;
+      gap: 48px;
+      padding-bottom: 40px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 28px;
+    }
+
+    .footer__brand .logo {
+      font-family: var(--ff-head);
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--gold);
+      letter-spacing: .08em;
+      margin-bottom: 4px;
+    }
+
+    .footer__brand .tagline {
+      font-family: var(--ff-head);
+      font-style: italic;
+      font-size: .88rem;
+      color: var(--cream-dim);
+      margin-bottom: 20px;
+    }
+
+    .footer__brand p {
+      font-size: .84rem;
+      color: var(--cream-dim);
+      line-height: 1.8;
+      max-width: 280px;
+    }
+
+    .footer__heading {
+      font-size: .72rem;
+      font-weight: 600;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 18px;
+    }
+
+    .footer__links {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 11px;
+    }
+
+    .footer__links a {
+      font-size: .84rem;
+      color: var(--cream-dim);
+      transition: color var(--transition);
+    }
+
+    .footer__links a:hover { color: var(--gold); }
+
+    .footer__hours {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+
+    .footer__hours li {
+      display: flex;
+      justify-content: space-between;
+      font-size: .82rem;
+      color: var(--cream-dim);
+    }
+
+    .footer__hours strong {
+      color: var(--cream);
+      font-weight: 500;
+    }
+
+    .footer__bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .footer__copy {
+      font-size: .78rem;
+      color: rgba(184,176,162,.45);
+    }
+
+    .footer__social {
+      display: flex;
+      gap: 14px;
+    }
+
+    .footer__social a {
+      width: 36px;
+      height: 36px;
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: border-color var(--transition), background var(--transition);
+      cursor: pointer;
+    }
+
+    .footer__social a:hover {
+      border-color: var(--gold);
+      background: var(--gold-glow);
+    }
+
+    .footer__social a svg {
+      width: 15px;
+      height: 15px;
+      stroke: var(--cream-dim);
+      fill: none;
+      stroke-width: 1.7;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      transition: stroke var(--transition);
+    }
+
+    .footer__social a:hover svg { stroke: var(--gold); }
+
+    /* ───────────── FLOATING TG BUTTON ───────────── */
+    .float-tg {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      gap: 0;
+      border-radius: 50px;
+      overflow: hidden;
+      box-shadow: 0 8px 28px rgba(0,0,0,.55), 0 0 0 1px rgba(201,168,76,.22);
+      cursor: pointer;
+    }
+
+    .float-tg__icon {
+      width: 56px;
+      height: 56px;
+      background: var(--gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: background var(--transition);
+    }
+
+    .float-tg__icon svg {
+      width: 26px;
+      height: 26px;
+      fill: #0f0f0f;
+    }
+
+    .float-tg__label {
+      max-width: 0;
+      overflow: hidden;
+      white-space: nowrap;
+      background: var(--gold);
+      color: #0f0f0f;
+      font-size: .78rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      transition: max-width 350ms ease, padding 350ms ease, background var(--transition);
+      padding: 0;
+    }
+
+    .float-tg:hover .float-tg__label {
+      max-width: 160px;
+      padding: 0 18px 0 6px;
+    }
+
+    .float-tg:hover .float-tg__icon,
+    .float-tg:hover .float-tg__label {
+      background: #dbb95a;
+    }
+
+    /* pulse ring */
+    .float-tg::before {
+      content: '';
+      position: absolute;
+      inset: -3px;
+      border-radius: 50px;
+      border: 2px solid var(--gold);
+      opacity: .4;
+      animation: ring 2.4s ease-out infinite;
+    }
+
+    @keyframes ring {
+      0%   { transform: scale(1); opacity: .4; }
+      70%  { transform: scale(1.12); opacity: 0; }
+      100% { transform: scale(1.12); opacity: 0; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .float-tg::before { animation: none; }
+    }
+
+    /* ───────────── RESPONSIVE ───────────── */
+    @media (max-width: 1024px) {
+      .about__grid    { gap: 48px; }
+      .menu__grid     { grid-template-columns: repeat(2, 1fr); }
+      .contact__grid  { gap: 48px; }
+      .footer__grid   { grid-template-columns: 1fr 1fr; }
+      .footer__brand  { grid-column: 1 / -1; }
+    }
+
+    @media (max-width: 768px) {
+      .navbar__links,
+      .navbar__cta      { display: none; }
+      .navbar__burger   { display: flex; }
+
+      .about__grid {
+        grid-template-columns: 1fr;
+        gap: 48px;
+      }
+
+      .about__images { height: 360px; }
+
+      .atmosphere__gallery {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 200px 200px 200px;
+      }
+
+      .atmosphere__item:first-child {
+        grid-column: 1 / 3;
+        grid-row: 1;
+      }
+
+      .menu__grid            { grid-template-columns: 1fr; }
+      .testimonials__grid    { grid-template-columns: 1fr; }
+      .contact__grid         { grid-template-columns: 1fr; }
+      .footer__grid          { grid-template-columns: 1fr; }
+
+      .float-tg              { bottom: 20px; right: 20px; }
+
+      .hero__title { font-size: clamp(2.6rem, 12vw, 4rem); }
+    }
+
+    @media (max-width: 480px) {
+      .menu__tab { padding: 10px 16px; font-size: .7rem; }
+      .about__stat strong { font-size: 1.6rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ─────────────── NAVBAR ─────────────── -->
+  <nav class="navbar" id="navbar" aria-label="Головна навігація">
+    <div class="container">
+      <div class="navbar__inner">
+        <a href="#hero" class="navbar__logo" aria-label="VOLTA — на початок сторінки">
+          VOLTA
+          <span>Ristorante Italiano</span>
+        </a>
+
+        <ul class="navbar__links">
+          <li><a href="#about">Про нас</a></li>
+          <li><a href="#menu">Меню</a></li>
+          <li><a href="#atmosphere">Атмосфера</a></li>
+          <li><a href="#contact">Контакти</a></li>
+        </ul>
+
+        <a href="https://t.me/volta_kyiv" class="navbar__cta" aria-label="Забронювати стіл через Telegram">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>
+          </svg>
+          Резервація
+        </a>
+
+        <button class="navbar__burger" id="burgerBtn" aria-label="Відкрити меню навігації" aria-expanded="false" aria-controls="mobileMenu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Mobile Menu -->
+  <div class="navbar__mobile" id="mobileMenu" role="dialog" aria-modal="true" aria-label="Мобільне меню">
+    <button class="navbar__mobile-close" id="closeMenu" aria-label="Закрити меню">&times;</button>
+    <a href="#about"       onclick="closeMenu()">Про нас</a>
+    <a href="#menu"        onclick="closeMenu()">Меню</a>
+    <a href="#atmosphere"  onclick="closeMenu()">Атмосфера</a>
+    <a href="#contact"     onclick="closeMenu()">Контакти</a>
+    <a href="https://t.me/volta_kyiv" style="color:var(--gold);margin-top:12px;font-size:1.2rem;">Забронювати стіл</a>
+  </div>
+
+  <!-- ─────────────── HERO ─────────────── -->
+  <section class="hero" id="hero" aria-label="Головний банер">
+    <div class="hero__bg" role="img" aria-label="Вечірня атмосфера ресторану VOLTA"></div>
+    <div class="hero__overlay"></div>
+    <div class="container">
+      <div class="hero__content">
+        <div class="hero__badge">Київ · відкрито з 2018</div>
+        <h1 class="hero__title">
+          VOLTA
+          <em>Ristorante</em>
+        </h1>
+        <p class="hero__sub">Справжня італійська кухня — від тальятелле ручної роботи до тірамісу за сімейним рецептом.</p>
+        <div class="hero__actions">
+          <a href="https://t.me/volta_kyiv" class="btn-primary" aria-label="Забронювати стіл через Telegram">
+            <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 2L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M22 2L15 22 11 13 2 9l20-7z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Забронювати стіл
+          </a>
+          <a href="#menu" class="btn-secondary">
+            Переглянути меню
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="hero__scroll" aria-hidden="true">
+      <div class="hero__scroll-line"></div>
+      <span>прокрутити</span>
+    </div>
+  </section>
+
+  <!-- ─────────────── MARQUEE ─────────────── -->
+  <div class="marquee-wrap" aria-hidden="true">
+    <div class="marquee-track">
+      <span>Паста ручної роботи</span><span class="dot">·</span>
+      <span>Натуральні інгредієнти</span><span class="dot">·</span>
+      <span>Авторські вина</span><span class="dot">·</span>
+      <span>Жива музика щоп'ятниці</span><span class="dot">·</span>
+      <span>Бронювання 24/7</span><span class="dot">·</span>
+      <span>Банкети та події</span><span class="dot">·</span>
+      <span>Паста ручної роботи</span><span class="dot">·</span>
+      <span>Натуральні інгредієнти</span><span class="dot">·</span>
+      <span>Авторські вина</span><span class="dot">·</span>
+      <span>Жива музика щоп'ятниці</span><span class="dot">·</span>
+      <span>Бронювання 24/7</span><span class="dot">·</span>
+      <span>Банкети та події</span><span class="dot">·</span>
+    </div>
+  </div>
+
+  <!-- ─────────────── ABOUT ─────────────── -->
+  <section class="about" id="about" aria-labelledby="about-title">
+    <div class="container">
+      <div class="about__grid">
+        <div class="about__images" aria-hidden="true">
+          <img
+            class="about__img-main"
+            src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&q=80&auto=format&fit=crop"
+            alt="Елегантний інтер'єр ресторану VOLTA"
+            loading="lazy"
+          />
+          <img
+            class="about__img-accent"
+            src="https://images.unsplash.com/photo-1551218808-94e220e084d2?w=600&q=80&auto=format&fit=crop"
+            alt="Шеф-кухар готує пасту"
+            loading="lazy"
+          />
+          <div class="about__badge" aria-label="6 років досвіду">
+            <strong>6</strong>
+            <span>років</span>
+          </div>
+        </div>
+
+        <div class="about__text">
+          <span class="section-label">Наша історія</span>
+          <h2 class="section-title" id="about-title">
+            Більше, ніж просто<br/><em>ресторан</em>
+          </h2>
+          <div class="divider"></div>
+          <p>VOLTA народилась із любові до Тоскани — її неквапливих обідів, терракотових дахів і вина, що пахне сонцем. Ми перевезли цю ідею до Києва і відтворили її у кожній страві.</p>
+          <p>Шеф Марко Верді навчався у Флоренції та Болоньї. Паста — лише ручна, тісто — лише на яйцях від місцевих фермерів. Соуси варяться кілька годин. Ніяких компромісів.</p>
+          <div class="about__stats">
+            <div class="about__stat">
+              <strong>2 400+</strong>
+              <span>щасливих гостей на місяць</span>
+            </div>
+            <div class="about__stat">
+              <strong>48</strong>
+              <span>страв у меню</span>
+            </div>
+            <div class="about__stat">
+              <strong>4.9</strong>
+              <span>рейтинг Google</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────── MENU ─────────────── -->
+  <section class="menu" id="menu" aria-labelledby="menu-title">
+    <div class="container">
+      <div class="menu__header">
+        <span class="section-label">Наше меню</span>
+        <h2 class="section-title" id="menu-title">Смак <em>Італії</em> у кожній страві</h2>
+        <div class="divider" style="margin:20px auto 0;"></div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="menu__tabs" role="tablist" aria-label="Категорії меню">
+        <button class="menu__tab active" role="tab" aria-selected="true"  aria-controls="panel-app"     id="tab-app"     onclick="switchTab(this,'panel-app')">Закуски</button>
+        <button class="menu__tab"        role="tab" aria-selected="false" aria-controls="panel-main"    id="tab-main"    onclick="switchTab(this,'panel-main')">Основні</button>
+        <button class="menu__tab"        role="tab" aria-selected="false" aria-controls="panel-dessert" id="tab-dessert" onclick="switchTab(this,'panel-dessert')">Десерти</button>
+      </div>
+
+      <!-- Appetizers -->
+      <div class="menu__panel active" id="panel-app" role="tabpanel" aria-labelledby="tab-app">
+        <div class="menu__grid">
+
+          <article class="menu-card">
+            <div class="menu-card__img-wrap">
+              <img class="menu-card__img" src="https://images.unsplash.com/photo-1572695157366-5e585ab2b69f?w=600&q=80&auto=format&fit=crop" alt="Брускетта з томатами та базиліком" loading="lazy"/>
+              <span class="menu-card__tag">Хіт</span>
+            </div>
+            <div class="menu-card__body">
+              <h3 class="menu-card__name">Брускетта Classica</h3>
+              <p class="menu-card__desc">Хрустке тосканське хлібо, свіжі томати чері, базилік, екстра-верджін олія та бальзамічна глазур.</p>
+              <div class="menu-card__footer">
+                <div class="menu-card__price">210 <span>грн</span></div>
+                <span class="menu-card__gram">150 г</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="menu-card">
+            <div class="menu-card__img-wrap">
+              <img class="menu-card__img" src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&q=80&auto=format&fit=crop" alt="Капрезе з буратою та помідорами" loading="lazy"/>
+            </div>
+            <div class="menu-card__body">
+              <h3 class="menu-card__name">Капрезе з Бурратою</h3>
+              <p class="menu-card__desc">Свіжа страчателла бурата, томати Sorrento, зелений базилік, чорна сіль та оливкова олія першого віджиму.</p>
+              <div class="menu-card__footer">
+                <div class="menu-card__price">285 <span>грн</span></div>
+                <span class="menu-card__gram">200 г</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="menu-card">
+            <div class="menu-card__img-wrap">
+              <img class="menu-card__img" src="https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=600&q=80&auto=format&fit=crop" alt="Антипасто з прошуто та оливками" loading="lazy"/>
+              <span class="menu-card__tag">Для двох</span>
+            </div>
+            <div class="menu-card__body">
+              <h3 class="menu-card__name">Antipasto della Casa</h3>
+              <p class="menu-card__desc">Пармська шинка, сопресата, пекоріно, оливки Taggiasca, маринований артишок та грісіні.</p>
+              <div class="menu-card__footer">
+                <div class="menu-card__price">420 <span>грн</span></div>
+                <span class="menu-card__gram">320 г</span>
+              </div>
+            </div>
+          </article>
+
+        </div>
+      </div>
+
+      <!-- Mains -->
+      <div class="menu__panel" id="panel-main" role="tabpanel" aria-labelledby="tab-main">
+        <div class="menu__grid">
+
+          <article class="menu-card">
+            <div class="menu-card__img-wrap">
+              <img class="menu-card__img" src="https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?w=600&q=80&auto=format&fit=crop" alt="Тальятелле з трюфелем та грибами" loading="lazy"/>
+              <span class="menu-card__tag">Шеф-хіт</span>
+            </div>
+            <div class="menu-card__body">
+              <h3 class="menu-card__name">Тальятелле al Tartufo</h3>
+              <p class="menu-card__desc">Паста ручної роботи, крем з білих грибів, стружка чорного трюфеля, пармезан 24 місяці.</p>
+              <div class="menu-card__footer">
+                <div class="menu-card__price">495 <span>грн</span></div>
+                <span class="menu-card__gram">280 г</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="menu-card">
+            <div class="menu-card__img-wrap">
+              <img class="menu-card__img" src="https://images.unsplash.com/photo-1555949258-eb67b1ef0ceb?w=600&q=80&auto=format&fit=crop" alt="Різото з морепродуктами" loading="lazy"/>
+            </div>
+            <div class="menu-card__body">
+              <h3 class="menu-card__name">Різото ai Frutti di Mare</h3>
+              <p class="menu-card__desc">Карнаролі, мідії, кальмари, креветки, шафран, білі вино Pinot Grigio, свіжа петрушка.</p>
+              <div class="menu-card__footer">
+                <div class="menu-card__price">480 <span>грн</span></div>
+                <span class="menu-card__gram">320 г</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="menu-card">
+            <div class="menu-card__img-wrap">
+              <img class="menu-card__img" src="https://images.unsplash.com/photo-1574894709920-11b28e7367e3?w=600&q=80&auto=format&fit=crop" alt="Піца Маргарита Неаполітана" loading="lazy"/>
+              <span class="menu-card__tag">Класика</span>
+            </div>
+            <div class="menu-card__body">
+              <h3 class="menu-card__name">Маргарита Neapolitana</h3>
+              <p class="menu-card__desc">Тісто на 48-год ферментації, соус San Marzano, фіор ді латте моцарела, свіжий базилік, оливкова олія.</p>
+              <div class="menu-card__footer">
+                <div class="menu-card__price">295 <span>грн</span></div>
+                <span class="menu-card__gram">400 г</span>
+              </div>
+            </div>
+          </article>
+
+        </div>
+      </div>
+
+      <!-- Desserts -->
+      <div class="menu__panel" id="panel-dessert" role="tabpanel" aria-labelledby="tab-dessert">
+        <div class="menu__grid">
+
+          <article class="menu-card">
+            <div class="menu-card__img-wrap">
+              <img class="menu-card__img" src="https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=600&q=80&auto=format&fit=crop" alt="Тірамісу класичний" loading="lazy"/>
+              <span class="menu-card__tag">Фірмовий</span>
+            </div>
+            <div class="menu-card__body">
+              <h3 class="menu-card__name">Тірамісу della Nonna</h3>
+              <p class="menu-card__desc">Рецепт бабусі шефа з Тревізо: маскарпоне, Savoiardi, еспресо Illy, марсала, какао Valrhona.</p>
+              <div class="menu-card__footer">
+                <div class="menu-card__price">235 <span>грн</span></div>
+                <span class="menu-card__gram">180 г</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="menu-card">
+            <div class="menu-card__img-wrap">
+              <img class="menu-card__img" src="https://images.unsplash.com/photo-1488477181946-6428a0291777?w=600&q=80&auto=format&fit=crop" alt="Паннакотта з полуницею" loading="lazy"/>
+            </div>
+            <div class="menu-card__body">
+              <h3 class="menu-card__name">Паннакотта ai Frutti</h3>
+              <p class="menu-card__desc">Ніжна ванільна паннакотта зі свіжим кулі з полуниці та малини, прикрашена їстівними квітами.</p>
+              <div class="menu-card__footer">
+                <div class="menu-card__price">210 <span>грн</span></div>
+                <span class="menu-card__gram">160 г</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="menu-card">
+            <div class="menu-card__img-wrap">
+              <img class="menu-card__img" src="https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=600&q=80&auto=format&fit=crop" alt="Канолі сицилійські" loading="lazy"/>
+              <span class="menu-card__tag">Сезонне</span>
+            </div>
+            <div class="menu-card__body">
+              <h3 class="menu-card__name">Канолі Siciliani</h3>
+              <p class="menu-card__desc">Хрустке трубочне тісто, крем з рікотти та цукатів, фісташки Бронте, темний шоколад.</p>
+              <div class="menu-card__footer">
+                <div class="menu-card__price">225 <span>грн</span></div>
+                <span class="menu-card__gram">120 г</span>
+              </div>
+            </div>
+          </article>
+
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ─────────────── ATMOSPHERE ─────────────── -->
+  <section class="atmosphere" id="atmosphere" aria-labelledby="atmosphere-title">
+    <div class="container">
+      <div class="atmosphere__header">
+        <span class="section-label">Атмосфера</span>
+        <h2 class="section-title" id="atmosphere-title">Місце, де час<br/><em>зупиняється</em></h2>
+        <div class="divider"></div>
+        <p style="color:var(--cream-dim);max-width:500px;margin:0 auto;font-size:.95rem;">Ми проектували VOLTA так, щоб кожен куток дихав Італією — від вінтажних плиток до мерехтіння свічок.</p>
+      </div>
+      <div class="atmosphere__gallery">
+        <div class="atmosphere__item">
+          <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&q=80&auto=format&fit=crop" alt="Головний зал ресторану VOLTA ввечері" loading="lazy"/>
+        </div>
+        <div class="atmosphere__item">
+          <img src="https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=600&q=80&auto=format&fit=crop" alt="Барна стійка з відбором вин" loading="lazy"/>
+        </div>
+        <div class="atmosphere__item">
+          <img src="https://images.unsplash.com/photo-1559329007-40df8a9345d8?w=600&q=80&auto=format&fit=crop" alt="Бокал червоного вина" loading="lazy"/>
+        </div>
+        <div class="atmosphere__item">
+          <img src="https://images.unsplash.com/photo-1466978913421-dad2ebd01d17?w=600&q=80&auto=format&fit=crop" alt="Затишний столик при свічках" loading="lazy"/>
+        </div>
+        <div class="atmosphere__item">
+          <img src="https://images.unsplash.com/photo-1424847651672-bf20a4b0982b?w=600&q=80&auto=format&fit=crop" alt="Шеф готує на відкритій кухні" loading="lazy"/>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────── CTA BAND ─────────────── -->
+  <section class="cta-band" aria-labelledby="cta-title">
+    <div class="container">
+      <div class="cta-band__inner">
+        <span class="section-label">Бронювання</span>
+        <h2 class="cta-band__title" id="cta-title">
+          Забронюйте стіл<br/><em>прямо зараз</em>
+        </h2>
+        <p class="cta-band__sub">Напишіть нам у Telegram — і ми підберемо ідеальний час для вашого вечора. Відповідаємо протягом 5 хвилин.</p>
+        <div class="cta-band__actions">
+          <a href="https://t.me/volta_kyiv" class="btn-tg" aria-label="Забронювати стіл у Telegram">
+            <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
+              <path fill="currentColor" d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+            </svg>
+            Написати в Telegram
+          </a>
+          <a href="tel:+380441234567" class="btn-secondary" aria-label="Зателефонувати">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13.1 19.79 19.79 0 0 1 1.61 4.5 2 2 0 0 1 3.59 2.3h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.13 6.13l.91-.91a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.99 17l-.07-.08z"/></svg>
+            Зателефонувати
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────── TESTIMONIALS ─────────────── -->
+  <section class="testimonials" aria-labelledby="testi-title">
+    <div class="container">
+      <div class="testimonials__header">
+        <span class="section-label">Відгуки гостей</span>
+        <h2 class="section-title" id="testi-title">Що кажуть <em>наші гості</em></h2>
+        <div class="divider"></div>
+      </div>
+      <div class="testimonials__grid">
+
+        <div class="tcard">
+          <div class="tcard__quote" aria-hidden="true">"</div>
+          <div class="tcard__stars" aria-label="5 зірок">
+            <svg class="tcard__star" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg class="tcard__star" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg class="tcard__star" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg class="tcard__star" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg class="tcard__star" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          </div>
+          <p class="tcard__text">«Тальятелле з трюфелем — це щось неймовірне. Відчуття, ніби сидиш у тратторії у Флоренції. Обслуговування бездоганне, атмосфера романтична. Будемо повертатись!»</p>
+          <div class="tcard__author">
+            <img class="tcard__avatar" src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=80&q=80&auto=format&fit=crop&crop=face" alt="Аватар Олени К." loading="lazy"/>
+            <div>
+              <div class="tcard__name">Олена К.</div>
+              <div class="tcard__role">Постійна гостя · Google Reviews</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tcard">
+          <div class="tcard__quote" aria-hidden="true">"</div>
+          <div class="tcard__stars" aria-label="5 зірок">
+            <svg class="tcard__star" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg class="tcard__star" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg class="tcard__star" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg class="tcard__star" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg class="tcard__star" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          </div>
+          <p class="tcard__text">«Відзначали корпоратив на 20 осіб. Команда VOLTA все організувала ідеально: меню, вина, живий музикант. Жодного зволікання. Гості у захваті досі!»</p>
+          <div class="tcard__author">
+            <img class="tcard__avatar" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&q=80&auto=format&fit=crop&crop=face" alt="Аватар Дмитра В." loading="lazy"/>
+            <div>
+              <div class="tcard__name">Дмитро В.</div>
+              <div class="tcard__role">Бізнес-захід · TripAdvisor</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tcard">
+          <div class="tcard__quote" aria-hidden="true">"</div>
+          <div class="tcard__stars" aria-label="5 зірок">
+            <svg class="tcard__star" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg class="tcard__star" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg class="tcard__star" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg class="tcard__star" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg class="tcard__star" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          </div>
+          <p class="tcard__text">«Паннакотта — просто шедевр. Різото з морепродуктами не поступається тому, що їла в Сицилії. Ціна абсолютно адекватна для такої якості. Рекомендую всім!»</p>
+          <div class="tcard__author">
+            <img class="tcard__avatar" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=80&q=80&auto=format&fit=crop&crop=face" alt="Аватар Марини Т." loading="lazy"/>
+            <div>
+              <div class="tcard__name">Марина Т.</div>
+              <div class="tcard__role">Foodie блогер · Instagram</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────── CONTACT ─────────────── -->
+  <section class="contact" id="contact" aria-labelledby="contact-title">
+    <div class="container">
+      <div class="contact__grid">
+        <div class="contact__info">
+          <span class="section-label">Контакти</span>
+          <h2 class="section-title" id="contact-title">Знайти <em>нас</em></h2>
+          <div class="divider"></div>
+          <p>Ми розташовані в самому центрі Києва, за кілька хвилин ходьби від метро Хрещатик. Зручне паркування поруч.</p>
+          <ul class="contact__list">
+            <li>
+              <div class="contact__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              </div>
+              <div class="contact__detail">
+                <strong>Адреса</strong>
+                <span>вул. Хрещатик, 15, Київ 01001</span>
+              </div>
+            </li>
+            <li>
+              <div class="contact__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13.1 19.79 19.79 0 0 1 1.61 4.5 2 2 0 0 1 3.59 2.3h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.13 6.13l.91-.91a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21.99 17l-.07-.08z"/></svg>
+              </div>
+              <div class="contact__detail">
+                <strong>Телефон</strong>
+                <span><a href="tel:+380441234567" style="color:inherit;transition:color .2s" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='inherit'">+38 (044) 123-45-67</a></span>
+              </div>
+            </li>
+            <li>
+              <div class="contact__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              </div>
+              <div class="contact__detail">
+                <strong>Години роботи</strong>
+                <span>Пн–Чт: 12:00–23:00 · Пт–Сб: 12:00–01:00 · Нд: 12:00–22:00</span>
+              </div>
+            </li>
+            <li>
+              <div class="contact__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              </div>
+              <div class="contact__detail">
+                <strong>Email</strong>
+                <span><a href="mailto:ciao@volta.com.ua" style="color:inherit;transition:color .2s" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='inherit'">ciao@volta.com.ua</a></span>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <div class="contact__map" aria-label="Розташування ресторану VOLTA на карті">
+          <img
+            src="https://images.unsplash.com/photo-1524661135-423995f22d0b?w=800&q=80&auto=format&fit=crop"
+            alt="Карта центру Києва з розташуванням ресторану"
+            loading="lazy"
+          />
+          <div class="contact__map-pin" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <span>VOLTA · Хрещатик, 15</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────── FOOTER ─────────────── -->
+  <footer>
+    <div class="container">
+      <div class="footer__grid">
+        <div class="footer__brand">
+          <div class="logo">VOLTA</div>
+          <div class="tagline">Ristorante Italiano · Kyiv</div>
+          <p>Справжня італійська кухня у серці Києва. Паста ручної роботи, авторські вина та незабутня атмосфера кожного вечора.</p>
+        </div>
+
+        <div>
+          <div class="footer__heading">Навігація</div>
+          <ul class="footer__links">
+            <li><a href="#about">Про ресторан</a></li>
+            <li><a href="#menu">Меню</a></li>
+            <li><a href="#atmosphere">Атмосфера</a></li>
+            <li><a href="#contact">Контакти</a></li>
+            <li><a href="https://t.me/volta_kyiv">Забронювати стіл</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <div class="footer__heading">Графік роботи</div>
+          <ul class="footer__hours">
+            <li><strong>Пн – Чт</strong><span>12:00 – 23:00</span></li>
+            <li><strong>Пт – Сб</strong><span>12:00 – 01:00</span></li>
+            <li><strong>Неділя</strong><span>12:00 – 22:00</span></li>
+          </ul>
+          <div style="margin-top:24px;padding-top:20px;border-top:1px solid var(--border);">
+            <div class="footer__heading">Адреса</div>
+            <p style="font-size:.84rem;color:var(--cream-dim);line-height:1.7;">вул. Хрещатик, 15<br/>Київ, 01001<br/>м. Хрещатик</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer__bottom">
+        <p class="footer__copy">© 2024 VOLTA Ristorante. Всі права захищені.</p>
+        <div class="footer__social" aria-label="Соціальні мережі">
+          <!-- Instagram -->
+          <a href="#" aria-label="Instagram VOLTA">
+            <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+          </a>
+          <!-- Facebook -->
+          <a href="#" aria-label="Facebook VOLTA">
+            <svg viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+          </a>
+          <!-- Telegram -->
+          <a href="https://t.me/volta_kyiv" aria-label="Telegram VOLTA">
+            <svg viewBox="0 0 24 24" stroke="none" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ─────────────── FLOATING TELEGRAM BUTTON ─────────────── -->
+  <a href="https://t.me/volta_kyiv" class="float-tg" aria-label="Забронювати стіл у Telegram">
+    <div class="float-tg__icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+      </svg>
+    </div>
+    <span class="float-tg__label">Резервація</span>
+  </a>
+
+  <!-- ─────────────── SCRIPTS (vanilla only) ─────────────── -->
+  <script>
+    /* ── Navbar scroll class ── */
+    var navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', function() {
+      if (window.scrollY > 60) {
+        navbar.classList.add('scrolled');
+      } else {
+        navbar.classList.remove('scrolled');
+      }
+    }, { passive: true });
+
+    /* ── Mobile menu ── */
+    var burger   = document.getElementById('burgerBtn');
+    var mobileMenu = document.getElementById('mobileMenu');
+    var closeBtn   = document.getElementById('closeMenu');
+
+    function openMobileMenu() {
+      mobileMenu.style.display = 'flex';
+      burger.setAttribute('aria-expanded', 'true');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeMenu() {
+      mobileMenu.style.display = 'none';
+      burger.setAttribute('aria-expanded', 'false');
+      document.body.style.overflow = '';
+    }
+
+    burger.addEventListener('click', openMobileMenu);
+    closeBtn.addEventListener('click', closeMenu);
+
+    mobileMenu.addEventListener('click', function(e) {
+      if (e.target === mobileMenu) closeMenu();
+    });
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeMenu();
+    });
+
+    /* ── Tab switcher ── */
+    function switchTab(btn, panelId) {
+      /* deactivate all tabs */
+      var tabs = document.querySelectorAll('.menu__tab');
+      tabs.forEach(function(t) {
+        t.classList.remove('active');
+        t.setAttribute('aria-selected', 'false');
+      });
+
+      /* hide all panels */
+      var panels = document.querySelectorAll('.menu__panel');
+      panels.forEach(function(p) { p.classList.remove('active'); });
+
+      /* activate selected */
+      btn.classList.add('active');
+      btn.setAttribute('aria-selected', 'true');
+      document.getElementById(panelId).classList.add('active');
+    }
+  </script>
+</body>
+</html>
